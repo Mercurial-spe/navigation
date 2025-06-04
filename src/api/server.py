@@ -31,7 +31,7 @@ ZOOM_LEVEL_KMEANS_CLUSTERS = {}
 # 导入DBSCAN
 from src.algorithms.DBSCAN import DBSCAN, apply_dbscan
 # 导入KMeans和Mini-Batch KMeans
-from src.algorithms.KMeans import apply_kmeans, apply_mini_batch_kmeans
+from src.algorithms.KMeans import apply_kmeans
 # 导入交通模拟模块
 from src.algorithms.traffic_simulate import update_traffic_flow, get_traffic_color, get_traffic_level
 # 导入A*寻路算法
@@ -555,112 +555,6 @@ def precompute_zoom_level_clusters_DBSCAN(graph):
     
     print("所有缩放等级的聚类预计算完成")
 
-@app.route('/api/kmeans_clusters')
-def get_kmeans_clusters():
-    """
-    提供基于KMeans聚类的API端点
-    使用KMeans算法对图中的节点进行聚类，返回每个聚类的质心节点
-    """
-    try:
-        # 获取请求参数
-        zoom_level = request.args.get('zoom_level', type=float)
-        if zoom_level is None:
-            return jsonify({"error": "缺少必要的zoom_level参数"}), 400
-        
-        print(f"收到KMeans聚类请求: zoom_level={zoom_level}")
-        
-        # 确保全局图对象已初始化
-        global GRAPH
-        if GRAPH is None:
-            return jsonify({"error": "图数据尚未加载完成，请稍后再试"}), 500
-        
-        # 根据zoom_level设置K值
-        if zoom_level <= 0.3:
-            n_clusters = 1200
-        elif zoom_level <= 0.5:
-            n_clusters = 600
-        else:
-            n_clusters = 300
-        
-        print(f"KMeans聚类参数: n_clusters={n_clusters}")
-        
-        # 应用KMeans算法
-        import time
-        start_time = time.time()
-        # cluster_labels, centroids = apply_kmeans(GRAPH, n_clusters=n_clusters)
-        # 改为应用 Mini-Batch K-Means 算法
-        batch_size = 256 # Mini-Batch 大小，可以根据需要调整
-        print(f"Mini-Batch KMeans聚类参数: n_clusters={n_clusters}, batch_size={batch_size}")
-        cluster_labels, centroids = apply_mini_batch_kmeans(
-            GRAPH,
-            n_clusters=n_clusters,
-            batch_size=batch_size,
-            max_iter=100, # Mini-batch 通常需要较少的迭代
-            tol=1e-3,      # 收敛容忍度
-            max_no_improvement=10 # 提前停止参数
-        )
-
-        clustering_time = time.time() - start_time
-        print(f"Mini-Batch KMeans聚类完成，耗时 {clustering_time:.4f} 秒，共形成 {len(centroids)} 个聚类")
-        
-        # 构建聚类代表点（质心）节点
-        result_nodes = []
-        for i, centroid in enumerate(centroids):
-            if centroid is not None and not (isinstance(centroid, float) and math.isnan(centroid)):
-                result_nodes.append({
-                    "id": f"centroid_{i}",
-                    "label": f"Cluster {i}",
-                    "x": float(centroid[0]),
-                    "y": float(centroid[1]),
-                    "size": 3,  # 可根据簇大小调整
-                    "cluster_id": i,
-                    "zoom_level": zoom_level
-                })
-        
-        # 构建质心之间的边（如果原图中有边连接两个不同簇的点，则在对应质心之间连边，去重）
-        result_edges = []
-        edge_set = set()
-        # 反向映射：顶点ID -> 簇ID
-        vertex_to_cluster = cluster_labels
-        for edge_id, edge in GRAPH.edges.items():
-            v1_id = edge.vertex1.id
-            v2_id = edge.vertex2.id
-            c1 = vertex_to_cluster.get(v1_id)
-            c2 = vertex_to_cluster.get(v2_id)
-            if c1 is None or c2 is None or c1 == c2:
-                continue
-            # 质心节点ID
-            source_id = f"centroid_{min(c1, c2)}"
-            target_id = f"centroid_{max(c1, c2)}"
-            edge_key = f"{source_id}_{target_id}"
-            if edge_key not in edge_set:
-                edge_set.add(edge_key)
-                result_edges.append({
-                    "id": f"{edge_key}_z{zoom_level}",
-                    "source": source_id,
-                    "target": target_id,
-                    "zoom_level": zoom_level
-                })
-        
-        # 构建返回结果
-        result = {
-            "nodes": result_nodes,
-            "edges": result_edges,
-            "params": {
-                "n_clusters": n_clusters,
-                "zoom_level": zoom_level,
-                "node_count": len(result_nodes),
-                "edge_count": len(result_edges)
-            }
-        }
-        print(f"返回 {len(result_nodes)} 个质心节点和 {len(result_edges)} 条边")
-        return jsonify(result)
-    except Exception as e:
-        import traceback
-        error_traceback = traceback.format_exc()
-        print(f"处理KMeans聚类请求时出错: {str(e)}")
-        print(error_traceback)
-        return jsonify({"error": str(e), "traceback": error_traceback}), 500
 
 @app.route('/api/paths', methods=['POST'])
 def get_paths():
@@ -953,7 +847,7 @@ def traffic_simulation_loop():
                 # print("已通过WebSocket发送网格拥堵更新") # 可选日志
         
         # 休眠一段时间
-        time.sleep(2)  # 每2秒更新一次
+        # time.sleep(2)  # 每2秒更新一次
 
 @app.route('/api/nearby_special_points', methods=['GET'])
 def get_nearby_special_points():
@@ -1117,20 +1011,19 @@ def precompute_zoom_level_clusters_KMeans(graph):
         # Mini-Batch KMeans 参数
         batch_size = 256 # Mini-Batch 大小，可以根据需要调整
         max_iter = 100   # Mini-batch 通常需要较少的迭代
-        tol = 1e-3       # 收敛容忍度
+        tol = 1000      # 收敛容忍度
         max_no_improvement = 10 # 提前停止参数
 
         print(f"缩放等级 {zoom_level} 使用Mini-Batch KMeans参数: n_clusters={n_clusters}, batch_size={batch_size}")
         
         try:
             # 应用Mini-Batch KMeans算法
-            cluster_labels, centroids = apply_mini_batch_kmeans(
+            cluster_labels, centroids = apply_kmeans(
                 graph,
                 n_clusters=n_clusters,
-                batch_size=batch_size,
                 max_iter=max_iter,
                 tol=tol,
-                max_no_improvement=max_no_improvement
+                init_method='random'
             )
             
             # 构建聚类代表点（质心）节点

@@ -48,7 +48,7 @@ function initGridOverlay(mapData) {
   
   // 为了响应地图容器大小变化，添加窗口大小变化事件监听器
   window.addEventListener('resize', () => {
-    if (gridOverlayState.canvas && mapData) { // Ensure mapData is available
+    if (gridOverlayState.canvas && mapData) { 
       gridOverlayState.canvas.width = mapContainer.offsetWidth;
       gridOverlayState.canvas.height = mapContainer.offsetHeight;
       
@@ -174,7 +174,7 @@ async function renderGridCongestion(mapData, gridData,mode='cluster') {
     ctx.lineWidth = 1;
     ctx.strokeRect(topLeft.x, topLeft.y, width, height);
     
-    // 可选：在网格中显示拥堵率文本
+
     if (width > 30 && height > 20) { // 只在网格足够大时显示文本
       const congestionText = `${Math.round(congestionRatio * 100)}%`;
       ctx.fillStyle = 'rgba(0,0,0,0.7)';

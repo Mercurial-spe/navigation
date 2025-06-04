@@ -8,8 +8,7 @@ import { renderGridCongestion } from './layersEvents.js';
 function handleTrafficUpdate(data) {
   // console.log('收到交通更新数据:', data);
   if (data && data.edges) {
-    // console.log(`收到 ${data.edges.length} 条边的交通更新数据`);
-    // addConsoleMessage(`收到${data.edges.length}条边的交通更新数据`);
+    
     
     // 调用渲染函数更新边的颜色
     if (window.mapData) { // 确保 mapData 可用
@@ -45,9 +44,7 @@ function initTrafficEvents(mapData) {
   const socket = listenToSocket('traffic_update', handleTrafficUpdate);
   listenToSocket('grid_congestion_update', handleGridCongestionUpdate); // 为网格拥堵数据添加监听
   
-  // 将socket保存到mapData.state中，以便其他地方使用
-  // 由于 listenToSocket 内部处理 socket 实例的创建和返回，这里我们假设它返回的是同一个实例
-  // 如果不是，apiService.js 中的 listenToSocket 需要调整为返回或管理单个共享的 socket 实例
+ 
   if (!state.socket) { // 避免重复赋值，假设 listenToSocket 返回的是相同的 socket 实例
     state.socket = socket; 
   }

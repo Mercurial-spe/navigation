@@ -122,7 +122,7 @@ async function fetchTriangulationData() {
  * @param {Function} callback - 收到消息时调用的回调函数
  */
 function listenToSocket(eventName, callback) {
-  const socket = io('ws://127.0.0.1:5000'); // 或者您的服务器地址
+  const socket = io('ws://127.0.0.1:5000'); 
 
   socket.on('connect', () => {
     console.log('已连接到 WebSocket 服务器');

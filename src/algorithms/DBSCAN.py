@@ -10,7 +10,7 @@ class DBSCAN:
     使用四叉树加速空间邻域查询，提高DBSCAN算法在大规模数据上的性能
     """
     
-    def __init__(self, eps=1.0, min_samples=5, max_cluster_size=10):
+    def __init__(self, eps=1.0, min_samples=5, max_cluster_size=100):
         """
         初始化DBSCAN算法
         
@@ -123,7 +123,7 @@ class DBSCAN:
             # else: 核心点未能形成有效簇 (例如max_cluster_size=0), 该核心点保持噪声状态(-1)
             # 因为仅当点实际加入current_cluster_pts时，其label才会被修改。
 
-        print(f"找到 {core_points_count} 个核心点")
+        # print(f"找到 {core_points_count} 个核心点")
         return self
     
     def _get_neighbors(self, vertex, graph):

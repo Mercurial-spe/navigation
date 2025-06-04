@@ -212,40 +212,6 @@ class Graph:
         distances.sort(key=lambda x: x[0])
         return [v for _, v in distances[:n]]
     
-    def get_subgraph(self, vertices):
-        """
-        根据顶点集合获取子图
-        
-        参数:
-            vertices: 顶点集合
-            
-        返回:
-            包含这些顶点及其间边的子图
-        """
-        subgraph = Graph()
-        
-        # 添加顶点
-        for vertex in vertices:
-            new_vertex = subgraph.create_vertex(vertex.x, vertex.y)
-            
-        # 创建顶点映射
-        vertex_map = {v.id: subgraph.vertices[i] for i, v in enumerate(vertices)}
-        
-        # 添加边
-        added_edges = set()
-        for vertex in vertices:
-            for edge in vertex.edges:
-                # 检查该边的两个顶点是否都在子图中
-                if edge.vertex1 in vertices and edge.vertex2 in vertices:
-                    edge_key = tuple(sorted([edge.vertex1.id, edge.vertex2.id]))
-                    if edge_key not in added_edges:
-                        v1 = vertex_map[edge.vertex1.id]
-                        v2 = vertex_map[edge.vertex2.id]
-                        subgraph.create_edge(v1, v2, edge.capacity)
-                        added_edges.add(edge_key)
-        
-        return subgraph
-    
     def is_connected(self):
         """
         检查图是否连通
@@ -279,11 +245,7 @@ class Graph:
                 for neighbor in neighbors:
                     if neighbor.id not in visited:
                         queue.append(neighbor)
-        
-        # print(f"DEBUG: 已访问顶点数: {len(visited)}, 总顶点数: {len(self.vertices)}")
-        # print(f"DEBUG: 已访问顶点ID: {visited}")
-        # print(f"DEBUG: 图中所有顶点ID: {list(self.vertices.keys())}")
-        
+       
         # 检查是否所有顶点都被访问
         return len(visited) == len(self.vertices)
     

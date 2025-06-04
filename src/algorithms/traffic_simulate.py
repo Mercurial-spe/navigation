@@ -7,7 +7,7 @@ from ..models.graph import Graph
 
 # 全局变量
 threshold: float = 0.5  # 拥堵阈值
-update_interval: int = 10  # 更新间隔（毫秒）
+update_interval: int = 1  # 更新间隔（毫秒）
 running: bool = False
 
 def calculate_travel_time(graph: Graph) -> Dict[str, float]:
