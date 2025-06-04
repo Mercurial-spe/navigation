@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四叉树可视化</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/2.4.0/sigma.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/graphology/0.25.4/graphology.umd.min.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        #quadtreeCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* Quadtree canvas on top, transparent background */
+            pointer-events: none; /* Allow mouse events to pass through to Sigma.js */
+            background: transparent; /* Ensure background is transparent */
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">加载四叉树可视化中...</div>
+    <div class="app-container">
+        <main class="app-content">
+            <!-- 使用动态加载的侧边栏替换原有的静态侧边栏 -->
+            <aside id="sidebar-container" class="app-sidebar"></aside>
+            <div class="app-main">
+                <button id="show-sidebar" class="show-sidebar-btn" title="显示侧边栏">
+                    <span>▶</span>
+                </button>
+                <div id="map-container">
+                    <canvas id="quadtreeCanvas"></canvas>
+                </div>
+                <div id="scale-info"></div>
+                <div class="resizer" id="main-resizer">
+                    <div class="resizer-handle"></div>
+                </div>
+                <div class="bottom-section">
+                    <div class="console-panel">
+                        <div class="console-header">
+                            <h3>输出控制台</h3>
+                            <button class="console-btn" id="clearConsole">清空</button>
+                        </div>
+                        <div class="console-output" id="consoleOutput">
+                            <div class="console-line">四叉树可视化系统初始化完成</div>
+                            <div class="console-line success">四叉树渲染引擎已加载</div>
+                            <div class="console-line">拖动分隔条可以调整地图与控制台比例</div>
+                            <div class="console-line">双击分隔条可以重置为默认比例</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 导入页面主脚本 -->
+    <script type="module" src="../js/pages/quadtree.js"></script>
+</body>
+</html> 

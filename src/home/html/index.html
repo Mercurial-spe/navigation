@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>主页</title>
     <style>
+        html {
+            scroll-behavior: smooth;  /* 添加平滑滚动效果 */
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -462,25 +466,27 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 20px 0;
+            padding: 30px 0;  /* 增加上下内边距 */
         }
 
         .description {
-            margin-bottom: 20px;
+            margin-bottom: 30px;  /* 增加与按钮的间距 */
         }
 
         .description h2 {
-            color: #333;  /* 改为深色文字 */
-            margin-bottom: 15px;
-            font-size: 24px;
+            color: #333;
+            margin-bottom: 25px;  /* 增加标题与正文的间距 */
+            font-size: 32px;  /* 增大标题字体 */
             font-weight: 600;
             text-shadow: none;
+            line-height: 1.4;  /* 增加行高 */
         }
 
         .description p {
-            color: #666;  /* 改为灰色文字 */
-            font-size: 16px;
-            line-height: 1.8;
+            color: #666;
+            font-size: 18px;  /* 增大正文字体 */
+            line-height: 1.8;  /* 增加行高 */
+            margin-bottom: 20px;  /* 增加段落间距 */
         }
 
         .button-container {
@@ -490,14 +496,14 @@
 
         .cta-button {
             display: inline-block;
-            padding: 12px 24px;
-            background-color: #4CAF50;  /* 改为不透明的按钮颜色 */
+            padding: 15px 30px;  /* 增大按钮内边距 */
+            background-color: #4CAF50;
             backdrop-filter: blur(5px);
             color: #fff;
             text-decoration: none;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            border-radius: 8px;
+            font-size: 18px;  /* 增大按钮文字 */
+            transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -964,8 +970,8 @@
     <!-- 添加导航栏 -->
     <nav class="navbar" id="navbar">
         <div class="nav-buttons">
-            <a href="#" class="nav-button active">主页面</a>
-            <a href="#about" class="nav-button">相关</a>
+            <a href="http://127.0.0.1:5000/" class="nav-button active">主页面</a>
+            <a href="#info-section" class="nav-button">相关</a>
         </div>
         
         <div class="nav-logo">
@@ -973,7 +979,7 @@
             <span class="nav-logo-text">Navigation</span>
         </div>
         
-        <a href="https://github.com/yourusername/yourrepo" class="github-link" target="_blank" rel="noopener noreferrer">
+        <a href="https://github.com/Mercurial-spe/navigation" class="github-link" target="_blank" rel="noopener noreferrer">
             <svg class="github-icon" viewBox="0 0 24 24">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.11.82-.26.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"></path>
             </svg>
@@ -1025,20 +1031,21 @@
             <div class="slider-container">
                 <div class="slider">
                     <div class="slide">
-                        <iframe src="http://127.0.0.1:5000/map.." title="地图页面1"></iframe>
+                        <!-- <iframe src="../pic/1.png" title="地图页面3"></iframe> -->
+                        <img src="/home/pic/1.png" alt="地图页面1">
                     </div>
                     <div class="slide">
-                        <iframe src="http://127.0.0.1:5000/map.." title="地图页面2"></iframe>
+                        <img src="/home/pic/2.png" alt="地图页面2">
                     </div>
                     <div class="slide">
-                        <iframe src="http://127.0.0.1:5000/map.." title="地图页面3"></iframe>
+                        <img src="/home/pic/3.png" alt="地图页面3">
                     </div>
-                    <div class="slide">
+                    <!-- <div class="slide">
                         <iframe src="http://127.0.0.1:5000/map.." title="地图页面4"></iframe>
                     </div>
                     <div class="slide">
                         <iframe src="http://127.0.0.1:5000/map.." title="地图页面5"></iframe>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <button class="slider-btn prev-btn">←</button>
@@ -1059,54 +1066,54 @@
             <div class="layout-container">
                 <!-- 第一个部分 -->
                 <div class="content-section">
-                    <a href="#section1" class="image-container">
-                        <iframe src="http://127.0.0.1:5000/map.." title="地图页面6"></iframe>
+                    <a href="http://127.0.0.1:5000/map" class="image-container">
+                        <img src="/home/pic/3.png" alt="地图">
                     </a>
                     <div class="text-button-container">
                         <div class="description">
-                            <h2>交互式地图展示</h2>
-                            <p>这是一个功能强大的交互式地图系统，支持多种数据可视化和地理信息展示功能。用户可以进行缩放、平移等操作，实现灵活的地图浏览体验。</p>
+                            <h2>交互式导航地图</h2>
+                            <p>这是系统的核心功能页面，提供完整的地图交互体验。包括实时路径规划、交通流量模拟、车流可视化等功能。您可以进行地图缩放、平移，选择起点终点计算最优路径，还可以观察实时交通状况。</p>
                         </div>
                         <div class="button-container">
-                            <a href="#section1" class="cta-button">查看详情</a>
+                            <a href="http://127.0.0.1:5000/map" class="cta-button">进入地图</a>
                         </div>
                     </div>
                 </div>
 
                 <!-- 第二个部分 -->
                 <div class="content-section reverse">
-                    <a href="#section2" class="image-container">
-                        <iframe src="http://127.0.0.1:5000/map.." title="地图页面7"></iframe>
+                    <a href="http://127.0.0.1:5000/quadtree-viz" class="image-container">
+                        <img src="/home/pic/1.png" alt="四叉树">
                     </a>
                     <div class="text-button-container">
                         <div class="description">
-                            <h2>数据分析视图</h2>
-                            <p>通过地图界面直观展示各类数据分析结果，支持多维度的数据展示和交互，帮助用户更好地理解和分析地理相关的数据信息。</p>
+                            <h2>四叉树空间索引可视化</h2>
+                            <p>展示系统使用的四叉树空间索引结构。您可以直观地看到空间被如何划分，以及节点是如何组织的。这种数据结构能够显著提升空间查询效率，帮助系统快速定位和检索地理位置信息。</p>
                         </div>
                         <div class="button-container">
-                            <a href="#section2" class="cta-button">了解更多</a>
+                            <a href="http://127.0.0.1:5000/quadtree-viz" class="cta-button">查看四叉树</a>
                         </div>
                     </div>
                 </div>
 
                 <!-- 第三个部分 -->
                 <div class="content-section">
-                    <a href="#section3" class="image-container">
-                        <iframe src="http://127.0.0.1:5000/map.." title="地图页面8"></iframe>
+                    <a href="http://127.0.0.1:5000/triangulation-viz" class="image-container">
+                        <img src="/home/pic/2.png" alt="三角剖分">
                     </a>
                     <div class="text-button-container">
                         <div class="description">
-                            <h2>位置服务功能</h2>
-                            <p>提供精确的位置服务和路径规划功能，结合实时数据更新，为用户提供准确的地理信息服务和位置相关的决策支持。</p>
+                            <h2>三角剖分网络可视化</h2>
+                            <p>展示地图的三角剖分结构，这是一种重要的空间分析工具。通过将空间划分为不重叠的三角形网络，可以更好地进行路径规划、区域划分和空间关系分析，为导航系统提供几何基础。</p>
                         </div>
                         <div class="button-container">
-                            <a href="#section3" class="cta-button">立即体验</a>
+                            <a href="http://127.0.0.1:5000/triangulation-viz" class="cta-button">查看三角剖分</a>
                         </div>
                     </div>
                 </div>
 
                 <!-- 第四个部分 -->
-                <div class="content-section reverse">
+                <!-- <div class="content-section reverse">
                     <a href="#section4" class="image-container">
                         <iframe src="http://127.0.0.1:5000/map.." title="地图页面9"></iframe>
                     </a>
@@ -1119,10 +1126,10 @@
                             <a href="#section4" class="cta-button">开始使用</a>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- 第五个部分 -->
-                <div class="content-section">
+                <!-- <div class="content-section">
                     <a href="#section5" class="image-container">
                         <iframe src="http://127.0.0.1:5000/map.." title="地图页面10"></iframe>
                     </a>
@@ -1135,25 +1142,26 @@
                             <a href="#section5" class="cta-button">查看演示</a>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </section>
     </div>
 
     <!-- 添加底部信息部分 -->
-    <section class="info-section">
+    <section class="info-section" id="info-section">
         <div class="info-container">
             <div class="info-grid">
                 <!-- 项目信息 -->
                 <div class="info-block">
                     <h3>项目介绍</h3>
-                    <p>这是一个基于现代Web技术开发的导航系统，集成了多种先进的数据可视化和空间分析功能。</p>
+                    <p>这是一个基于现代Web技术开发的智能导航系统，采用前沿的空间数据结构和算法，实现了高效的路径规划和数据可视化。系统整合了四叉树空间索引和三角剖分网络，为用户提供直观的地理信息分析工具。</p>
                     <div class="tech-stack">
-                        <span class="tech-tag">Python</span>
-                        <span class="tech-tag">Flask</span>
-                        <span class="tech-tag">JavaScript</span>
-                        <span class="tech-tag">HTML5</span>
-                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">Python 3.8+</span>
+                        <span class="tech-tag">Flask 2.0</span>
+                        <span class="tech-tag">ES6+</span>
+                        <span class="tech-tag">WebGL</span>
+                        <span class="tech-tag">GIS</span>
+                        <span class="tech-tag">空间索引</span>
                     </div>
                 </div>
                 
@@ -1161,11 +1169,11 @@
                 <div class="info-block">
                     <h3>核心功能</h3>
                     <ul class="feature-list">
-                        <li>实时地图数据可视化</li>
-                        <li>智能路径规划算法</li>
-                        <li>空间数据聚类分析</li>
-                        <li>交互式用户界面</li>
-                        <li>响应式设计适配</li>
+                        <li>基于四叉树的高效空间索引结构</li>
+                        <li>Delaunay三角剖分的路网分析</li>
+                        <li>多源最短路径实时规划</li>
+                        <li>交通流量动态模拟与可视化</li>
+                        <li>地理信息实时渲染与交互</li>
                     </ul>
                 </div>
                 
@@ -1173,9 +1181,10 @@
                 <div class="info-block">
                     <h3>联系我们</h3>
                     <div class="contact-info">
-                        <p><i class="fas fa-envelope"></i> Email: contact@example.com</p>
-                        <p><i class="fas fa-phone"></i> 电话: (123) 456-7890</p>
-                        <p><i class="fas fa-map-marker-alt"></i> 地址: 某某市某某区</p>
+                        <p><i class="fas fa-envelope"></i> Email: Anchirit@foxmail.com</p>
+                        <p><i class="fas fa-phone"></i> 电话: (+86) 15217804318</p>
+                        <p><i class="fas fa-map-marker-alt"></i> 地址: 广东省 广州市 华南理工大学</p>
+                        <p><i class="fas fa-code-branch"></i> GitHub: https://github.com/Mercurial-spe/navigation</p>
                     </div>
                 </div>
             </div>

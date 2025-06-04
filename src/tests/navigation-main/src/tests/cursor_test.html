@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级流体光效模拟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            background-color: #000;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script type="x-shader/x-vertex" id="vertexShader">
+        varying vec2 vUv;
+        
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    </script>
+    
+    <script type="x-shader/x-fragment" id="fragmentShader">
+        uniform vec2 uResolution;
+        uniform vec2 uMouse;
+        uniform vec2 uPrevMouse;
+        uniform float uTime;
+        uniform float uIntensity;
+        uniform float uHoverIntensity;
+        
+        varying vec2 vUv;
+
+        const float PI = 3.14159265359;
+        
+        // 噪声函数
+        float hash(float n) {
+            return fract(sin(n) * 43758.5453);
+        }
+
+        float noise(vec3 x) {
+            vec3 p = floor(x);
+            vec3 f = fract(x);
+            f = f * f * (3.0 - 2.0 * f);
+            
+            float n = p.x + p.y * 57.0 + p.z * 113.0;
+            return mix(
+                mix(
+                    mix(hash(n), hash(n + 1.0), f.x),
+                    mix(hash(n + 57.0), hash(n + 58.0), f.x),
+                    f.y
+                ),
+                mix(
+                    mix(hash(n + 113.0), hash(n + 114.0), f.x),
+                    mix(hash(n + 170.0), hash(n + 171.0), f.x),
+                    f.y
+                ),
+                f.z
+            );
+        }
+        
+        float fbm(vec3 p) {
+            float f = 0.0;
+            float amplitude = 0.5;
+            float frequency = 1.0;
+            for (int i = 0; i < 5; i++) {
+                f += amplitude * noise(p * frequency);
+                amplitude *= 0.5;
+                frequency *= 2.0;
+            }
+            return f;
+        }
+        
+        // 高级流体效果
+        vec3 fluidEffect(vec2 uv, vec2 mouse, vec2 prevMouse, float intensity, float time) {
+            // 计算速度方向
+            vec2 velocity = (mouse - prevMouse) * 10.0;
+            float speed = length(velocity);
+            
+            // 计算与鼠标位置的距离
+            float dist = length(uv - mouse);
+            
+            // 创建流动轨迹
+            vec2 offset = normalize(uv - mouse);
+            float angle = atan(offset.y, offset.x);
+            
+            // 扭曲基础
+            float distortion = sin(angle * 3.0 + time * 2.0) * 0.2 + 
+                              cos(angle * 5.0 - time * 1.5) * 0.3;
+            
+            // 创建复杂的流体模式
+            vec3 p = vec3(uv * 3.0, time * 0.2);
+            float pattern1 = fbm(p + fbm(p + fbm(p) * 2.0) * 2.0);
+            float pattern2 = fbm(p + vec3(1.7, 4.6, 8.9) + fbm(p + vec3(0.8)) * 2.0);
+            
+            // 让流体沿着鼠标移动方向流动
+            vec2 flowDirection = normalize(velocity + vec2(0.001));
+            float flowStrength = dot(normalize(uv - mouse), flowDirection) * 0.5 + 0.5;
+            
+            // 光照效果
+            float glowOrange = smoothstep(0.9, 0.0, dist) * intensity * (pattern1 * 0.8 + 0.2) * flowStrength;
+            float glowBlue = smoothstep(0.8, 0.0, dist) * intensity * (pattern2 * 0.7 + 0.3) * (1.0 - flowStrength);
+            
+            // 创建轨迹
+            float trail = smoothstep(0.3, 0.0, length(uv - (mouse + normalize(velocity) * pattern1 * 0.3)));
+            
+            // 高亮效果
+            float highlight = pow(1.0 - dist, 8.0) * intensity * 2.0;
+            
+            // 颜色混合
+            vec3 orangeColor = vec3(1.0, 0.6, 0.1) * (glowOrange + trail * 0.5 + highlight);
+            vec3 blueColor = vec3(0.1, 0.4, 0.8) * (glowBlue + trail * 0.3);
+            
+            // 流体轨迹
+            vec2 trailUV = uv - mouse;
+            float trailPattern = fbm(vec3(trailUV * 5.0 + time * 0.2, time * 0.1));
+            float trailMask = smoothstep(0.7, 0.0, dist) * trailPattern * intensity;
+            
+            // 附加细节
+            float detail = fbm(vec3(uv * 20.0, time)) * 0.05 * intensity;
+            
+            return orangeColor + blueColor + vec3(1.0, 0.8, 0.4) * detail;
+        }
+        
+        void main() {
+            // 基础颜色 - 深色背景
+            vec3 color = vec3(0.02, 0.02, 0.04);
+            
+            // 添加主流体效果
+            float combinedIntensity = max(uIntensity, uHoverIntensity * 0.7);
+            if (combinedIntensity > 0.0) {
+                color += fluidEffect(vUv, uMouse, uPrevMouse, combinedIntensity, uTime);
+            }
+            
+            // 添加光晕
+            float dist = length(vUv - uMouse);
+            float glow = smoothstep(0.5, 0.0, dist) * 0.05 * combinedIntensity;
+            color += vec3(0.1, 0.3, 0.6) * glow;
+            
+            // 调整最终亮度和饱和度
+            color = pow(color, vec3(0.8)); // 提高亮度
+            
+            gl_FragColor = vec4(color, 1.0);
+        }
+    </script>
+
+    <script>
+        // 初始化Three.js
+        let scene, camera, renderer;
+        let uniforms, geometry, material, mesh;
+        let mousePos = { x: 0.5, y: 0.5 };
+        let prevMousePos = { x: 0.5, y: 0.5 };
+        let intensity = 0.0;
+        let hoverIntensity = 0.0;
+        let lastClickTime = 0;
+        let isMouseMoving = false;
+        let mouseMovementTimer;
+        let inactivityTimer;
+        
+        function init() {
+            // 创建场景
+            scene = new THREE.Scene();
+            
+            // 正交相机
+            camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+            
+            // 渲染器
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            
+            // 创建全屏四边形
+            geometry = new THREE.PlaneGeometry(2, 2);
+            
+            // 着色器uniforms
+            uniforms = {
+                uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                uPrevMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                uTime: { value: 0.0 },
+                uIntensity: { value: 0.0 },
+                uHoverIntensity: { value: 0.0 }
+            };
+            
+            // 材质
+            material = new THREE.ShaderMaterial({
+                uniforms: uniforms,
+                vertexShader: document.getElementById('vertexShader').textContent,
+                fragmentShader: document.getElementById('fragmentShader').textContent
+            });
+            
+            // 创建网格
+            mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+            
+            // 事件监听
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('click', onClick);
+            window.addEventListener('touchstart', onTouch);
+            window.addEventListener('touchmove', onTouchMove);
+            
+            // 如果一段时间没有活动，添加一些自动动画
+            startInactivityTimer();
+            
+            // 开始动画
+            animate();
+        }
+        
+        function startInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                // 如果用户长时间不活动，添加一些轻微的自动效果
+                autoAnimate();
+            }, 5000);
+        }
+        
+        function autoAnimate() {
+            // 随机位置变化
+            let targetX = 0.3 + Math.random() * 0.4;
+            let targetY = 0.3 + Math.random() * 0.4;
+            
+            // 模拟鼠标移动
+            let steps = 30;
+            let currentStep = 0;
+            
+            function moveStep() {
+                if (currentStep < steps) {
+                    prevMousePos.x = mousePos.x;
+                    prevMousePos.y = mousePos.y;
+                    
+                    mousePos.x += (targetX - mousePos.x) * 0.1;
+                    mousePos.y += (targetY - mousePos.y) * 0.1;
+                    
+                    uniforms.uMouse.value.set(mousePos.x, mousePos.y);
+                    uniforms.uPrevMouse.value.set(prevMousePos.x, prevMousePos.y);
+                    
+                    hoverIntensity = 0.3;
+                    
+                    currentStep++;
+                    setTimeout(moveStep, 50);
+                } else {
+                    // 休息一下后继续下一个动画
+                    setTimeout(autoAnimate, 2000);
+                }
+            }
+            
+            moveStep();
+        }
+        
+        function onWindowResize() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+        }
+        
+        function onMouseMove(event) {
+            // 重置自动动画计时器
+            startInactivityTimer();
+            
+            // 储存前一个位置
+            prevMousePos.x = mousePos.x;
+            prevMousePos.y = mousePos.y;
+            
+            // 更新当前位置
+            mousePos.x = event.clientX / window.innerWidth;
+            mousePos.y = 1.0 - event.clientY / window.innerHeight; // 反转Y轴，使其与UV坐标系统一致
+            
+            // 更新着色器中的位置
+            uniforms.uMouse.value.set(mousePos.x, mousePos.y);
+            uniforms.uPrevMouse.value.set(prevMousePos.x, prevMousePos.y);
+            
+            // 设置鼠标移动状态
+            isMouseMoving = true;
+            hoverIntensity = Math.min(hoverIntensity + 0.1, 0.8);
+            
+            // 重置鼠标移动计时器
+            clearTimeout(mouseMovementTimer);
+            mouseMovementTimer = setTimeout(() => {
+                isMouseMoving = false;
+            }, 100);
+        }
+        
+        function onClick() {
+            // 重置自动动画计时器
+            startInactivityTimer();
+            
+            // 点击时增加强度
+            intensity = 1.0;
+            lastClickTime = Date.now();
+            
+            // 确保鼠标位置已更新
+            uniforms.uMouse.value.set(mousePos.x, mousePos.y);
+            uniforms.uPrevMouse.value.set(prevMousePos.x, prevMousePos.y);
+        }
+        
+        function onTouch(event) {
+            // 重置自动动画计时器
+            startInactivityTimer();
+            
+            if (event.touches.length > 0) {
+                prevMousePos.x = mousePos.x;
+                prevMousePos.y = mousePos.y;
+                
+                mousePos.x = event.touches[0].clientX / window.innerWidth;
+                mousePos.y = 1.0 - event.touches[0].clientY / window.innerHeight;
+                
+                uniforms.uMouse.value.set(mousePos.x, mousePos.y);
+                uniforms.uPrevMouse.value.set(prevMousePos.x, prevMousePos.y);
+                
+                onClick();
+            }
+        }
+        
+        function onTouchMove(event) {
+            // 重置自动动画计时器
+            startInactivityTimer();
+            
+            if (event.touches.length > 0) {
+                prevMousePos.x = mousePos.x;
+                prevMousePos.y = mousePos.y;
+                
+                mousePos.x = event.touches[0].clientX / window.innerWidth;
+                mousePos.y = 1.0 - event.touches[0].clientY / window.innerHeight;
+                
+                uniforms.uMouse.value.set(mousePos.x, mousePos.y);
+                uniforms.uPrevMouse.value.set(prevMousePos.x, prevMousePos.y);
+                
+                isMouseMoving = true;
+                hoverIntensity = Math.min(hoverIntensity + 0.1, 0.8);
+                
+                clearTimeout(mouseMovementTimer);
+                mouseMovementTimer = setTimeout(() => {
+                    isMouseMoving = false;
+                }, 100);
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // 更新时间
+            uniforms.uTime.value += 0.01;
+            
+            // 墨水效果强度随时间衰减
+            if (intensity > 0) {
+                // 计算自点击以来经过的时间（秒）
+                const elapsed = (Date.now() - lastClickTime) / 1000;
+                // 定义衰减速率，这里设定为5秒衰减完毕
+                intensity = Math.max(0, 1.0 - elapsed / 5.0);
+                uniforms.uIntensity.value = intensity;
+            }
+            
+            // 鼠标悬停效果衰减
+            if (!isMouseMoving && hoverIntensity > 0) {
+                hoverIntensity = Math.max(0, hoverIntensity - 0.005);
+            }
+            uniforms.uHoverIntensity.value = hoverIntensity;
+            
+            renderer.render(scene, camera);
+        }
+        
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>

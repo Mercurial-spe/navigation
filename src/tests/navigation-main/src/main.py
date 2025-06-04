@@ -68,7 +68,7 @@ def test_traffic_simulation(graph: Graph, simulation_steps: int = 5):
         update_traffic_flow(graph)
         
         # 等待一段时间
-        # time.sleep(0.1)
+        time.sleep(0.1)
 
 
 
@@ -241,7 +241,7 @@ def export_and_serve_map(graph, data_path=None, run_web_server=True):
     
     # 运行Web服务器
     if run_web_server:
-        run_server(host='127.0.0.1', port=5000, debug=False)
+        run_server(host='127.0.0.1', port=5000, debug=True)
 
 def test_a_star_algorithm(graph: Graph):
     """
@@ -287,7 +287,7 @@ def main():
     # 测试小规模地图生成（为了前端渲染效率，使用较小的规模）
     print("\n\n测试加载或生成地图")
     # 加载已存在的地图，如果加载失败则生成新地图
-    graph = test_random_map_generation(n=20000, load_existing=False)
+    graph = test_random_map_generation(n=1000, load_existing=False)
     
     # 检查实际生成的点数
     # print(f"实际生成的点数: {len(graph.vertices)}")

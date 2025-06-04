@@ -1,0 +1,1102 @@
+html {
+    margin: 0;
+    padding: 0;
+}
+
+/* 公共样式 */
+:root {
+    /* 主题色变量 */
+    --theme-color: #4facfe; /* 默认主题色（浅蓝色）, 同时也是原始图层的基础色 */
+    --original-theme: #4facfe; /* 原始图层主题色 - 显式设置为浅蓝色 */
+    --cluster-theme: #4CAF50; /* 集群图层主题色 - 绿色系 */
+    --mixed-theme: #9C27B0; /* 混合图层主题色 - 紫色系 */
+    
+    /* 基于 --theme-color 的浅色/深色变体（用于背景和文本） */
+    --theme-color-light-50: #E0F2F7; /* 浅蓝色 50 */
+    --theme-color-light-200: #B3E5FC; /* 浅蓝色 200 */
+    --theme-color-light-300: #81D4FA; /* 浅蓝色 300 */
+    --theme-color-light-400: #4FC3F7; /* 浅蓝色 400 */
+    --theme-color-dark-700: #0277BD; /* 深蓝色 700 */
+    --theme-color-dark-800: #0288D1; /* 深蓝色 800 */
+    --theme-color-dark-900: #01579B; /* 深蓝色 900 */
+    
+    /* 主题背景色定义 */
+    /* 原始图层 - 使用基于 --theme-color 的变体 */
+    --original-sidebar-bg: var(--theme-color-light-50); 
+    --original-panel-bg: var(--theme-color-light-200); 
+    --original-console-bg: var(--theme-color-light-300); 
+    --original-console-header-bg: var(--theme-color-light-400); 
+
+    /* 集群图层 */
+    --cluster-sidebar-bg: #E8F5E9; /* 浅绿色 50 */
+    --cluster-panel-bg: #C8E6C9; /* 浅绿色 200 */
+    --cluster-console-bg: #A5D6A7; /* 浅绿色 300 */
+    --cluster-console-header-bg: #81C784; /* 浅绿色 400 */
+
+    /* 混合图层 */
+    --mixed-sidebar-bg: #F3E5F5; /* 浅紫色 50 */
+    --mixed-panel-bg: #E1BEE7; /* 浅紫色 200 */
+    --mixed-console-bg: #CE93D8; /* 浅紫色 300 */
+    --mixed-console-header-bg: #BA68C8; /* 浅紫色 400 */
+
+    /* 主题文本颜色定义 */
+    /* 原始图层文本颜色 - 使用基于 --theme-color 的深色变体 */
+    --original-sidebar-text: var(--theme-color-dark-800); 
+    --original-panel-text: var(--theme-color-dark-700);   
+    --original-console-text: var(--theme-color-dark-900); 
+    --original-heading-text: var(--theme-color-dark-800); 
+    
+    /* 集群图层文本颜色 */
+    --cluster-sidebar-text: #2E7D32; /* 深绿色 - 侧边栏文本 */
+    --cluster-panel-text: #388E3C;   /* 绿色 - 功能面板文本 */
+    --cluster-console-text: #1B5E20; /* 深绿色 - 控制台文本 */
+    --cluster-heading-text: #43A047; /* 绿色 - 标题文本 */
+    
+    /* 混合图层文本颜色 */
+    --mixed-sidebar-text: #6A1B9A; /* 深紫色 - 侧边栏文本 */
+    --mixed-panel-text: #7B1FA2;   /* 紫色 - 功能面板文本 */
+    --mixed-console-text: #4A148C; /* 深紫色 - 控制台文本 */
+    --mixed-heading-text: #8E24AA; /* 紫色 - 标题文本 */
+
+    /* 当前主题文本颜色（将由JS更新） */
+    --current-sidebar-text: var(--original-sidebar-text);
+    --current-panel-text: var(--original-panel-text);
+    --current-console-text: var(--original-console-text);
+    --current-heading-text: var(--original-heading-text);
+
+    /* 当前应用的主题色 (JS将更新这些) */
+    /* --theme-color is already set by JS, defaulting here for clarity */
+    --current-sidebar-bg: var(--original-sidebar-bg);
+    --current-panel-bg: var(--original-panel-bg);
+    --current-console-bg: var(--original-console-bg);
+    --current-console-header-bg: var(--original-console-header-bg);
+    
+    /* 主题色过渡效果 */
+    --theme-transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+
+    /* 可折叠组件背景色变深程度 */
+    --collapsible-darken-percentage: 8%; /* 控制变深程度，例如 8% 混合黑色 */
+}
+
+body {
+    margin: 0;
+    font-family: 'Noto Sans SC', Arial, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    /* transition: var(--theme-transition); REMOVED */
+}
+
+/* 通用布局容器 */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+/* 头部布局 */
+/* .app-header {
+    flex: 0 0 auto;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    z-index: 200;
+} */
+
+/* 内容区布局 */
+.app-content {
+    flex: 1;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 侧边栏布局 */
+.app-sidebar {
+    width: 20%;
+    min-width: 280px;
+    max-width: 280px;
+    overflow-y: auto;
+    /* background-color: #263238; */
+    background-color: var(--current-sidebar-bg);
+    /* color: #eceff1; */
+    color: var(--current-sidebar-text);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column; 
+    /* transition: all 0.3s ease, background-color var(--theme-transition); */
+    transition: transform 0.3s ease, width 0.3s ease, min-width 0.3s ease, margin-right 0.3s ease, padding-right 0.3s ease, var(--theme-transition);
+    position: relative;
+    border-right: 3px solid var(--theme-color);
+}
+
+/* 侧边栏隐藏状态 */
+.app-sidebar.hidden {
+    transform: translateX(-100%);
+    width: 0;
+    min-width: 0;
+    margin-right: 0;
+    padding-right: 0;
+    overflow: hidden;
+}
+
+/* 侧边栏隐藏时，主内容区域自适应 */
+.app-main.full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* 侧边栏头部样式 */
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative; /* 为按钮定位做准备 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    margin-bottom: 10px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--theme-color) 0%, rgba(255, 255, 255, 0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: var(--theme-transition);
+}
+
+/* 侧边栏导航样式 */
+.sidebar-nav {
+    padding: 20px 0;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.nav-item a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    /* color: #b0bec5; */
+    color: var(--current-sidebar-text);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-item a:hover {
+    background-color: var(--theme-color);
+    color: #fff;
+    border-left-color: var(--theme-color);
+}
+
+.nav-item.active a {
+    background-color: var(--theme-color);
+    color: #fff;
+    border-left-color: var(--theme-color);
+    font-weight: bold;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
+}
+
+.nav-icon {
+    margin-right: 15px;
+    font-size: 18px;
+}
+
+.nav-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* 侧边栏内容部分 */
+.sidebar-section {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-title {
+    font-size: 16px;
+    margin: 0 0 15px;
+    /* color: var(--theme-color); */
+    color: var(--current-heading-text);
+    font-weight: 500;
+    transition: var(--theme-transition);
+}
+
+.section-content {
+    font-size: 13px;
+    line-height: 1.6;
+    /* color: #b0bec5; */
+    color: var(--current-sidebar-text);
+}
+
+.section-content p {
+    margin: 0 0 10px;
+}
+
+/* 侧边栏底部 */
+.sidebar-footer {
+    margin-top: auto;
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    color: #78909c;
+    text-align: center;
+}
+
+/* 主内容区布局 */
+.app-main {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    width: calc(100% - 20%);
+    max-width: calc(100% - 250px);
+}
+
+/* 底部布局 */
+.app-footer {
+    flex: 0 0 auto;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    z-index: 200;
+}
+
+/* 原有地图容器调整为适应新布局 */
+#map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+}
+
+/* 底部区域容器 */
+.bottom-section {
+    position: absolute;
+    top: 60%;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* 分隔条样式 */
+.resizer {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background-color: #ccc;
+    cursor: ns-resize;
+    z-index: 300;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+}
+
+#main-resizer {
+    top: 60%;
+    transform: translateY(-50%);
+}
+
+.resizer-handle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 4px;
+    background-color: #888;
+    border-radius: 2px;
+}
+
+.resizer:hover {
+    background-color: #b8b8b8;
+}
+
+.resizer:hover .resizer-handle {
+    background-color: #666;
+}
+
+.resizer.active {
+    background-color: #a0a0a0;
+}
+
+.resizer.active .resizer-handle {
+    background-color: #555;
+    width: 50px;
+}
+
+/* 加载提示样式 */
+.loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    z-index: 1000;
+}
+
+/* 缩放信息样式 */
+#scale-info {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    z-index: 100;
+}
+
+/* 消息提示样式 */
+.message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 1000;
+    transition: opacity 0.3s;
+}
+
+.message.error {
+    background-color: rgba(220, 53, 69, 0.9);
+}
+
+.message.success {
+    background-color: rgba(40, 167, 69, 0.9);
+}
+
+/* 按钮容器 */
+#map-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+}
+
+/* 按钮样式 */
+.control-button {
+    z-index: 100;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.control-button:hover {
+    background-color: #f0f0f0;
+}
+
+/* 功能面板样式 */
+.function-panel {
+    position: relative;
+    flex: 0 0 auto;
+    width: 100%;
+    /* background-color: #1e2a3a; */
+    background-color: var(--current-panel-bg);
+    border-top: 1px solid #1a232f; /* Consider theming this border too, or making it semi-transparent */
+    padding: 15px;
+    box-sizing: border-box;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    transition: var(--theme-transition);
+}
+
+.function-panel h3 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    /* color: #e0e0e0; */
+    color: var(--current-heading-text);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: var(--theme-transition);
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.function-btn {
+    padding: 10px 15px;
+    margin: 5px 5px;
+    background: transparent;
+    /* color: #333; */
+    color: var(--current-panel-text);
+    border: 2px solid var(--theme-color);
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--theme-transition);
+    z-index: 1;
+    flex: 1;
+    max-width: 180px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.function-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--theme-color);
+    opacity: 0.15;
+    transform: translateX(-100%);
+    transition: 0.3s;
+    z-index: -1;
+}
+
+.function-btn:hover {
+    color: var(--theme-color);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    transform: translateY(-2px);
+}
+
+.function-btn:active {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    transform: translateY(0);
+}
+
+.function-btn.active {
+    background-color: var(--theme-color);
+    color: white;
+    animation: activeGlow 1.5s infinite alternate;
+}
+
+/* 控制台面板样式 - 确保高优先级 */
+.bottom-section .console-panel,
+.console-panel,
+body .console-panel,
+.app-container .console-panel,
+html .console-panel {
+    background-color: var(--current-console-bg) !important;
+    color: var(--current-console-text) !important;
+}
+
+.bottom-section .console-output,
+.console-output,
+body .console-output,
+#consoleOutput,
+html .console-output {
+    background-color: var(--current-console-bg) !important;
+}
+
+.bottom-section .console-header,
+.console-header,
+body .console-header,
+html .console-header {
+    background-color: var(--current-console-header-bg) !important;
+    border-bottom: 1px solid var(--theme-color);
+}
+
+/* 控制台面板样式 */
+.console-panel {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    /* background-color: #2d2d2d; */
+    background-color: var(--current-console-bg) !important;
+    border-top: 1px solid var(--theme-color); /* 主题化边框颜色 */
+    /* color: #f0f0f0; */
+    color: var(--current-console-text);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    overflow: hidden;
+    transition: var(--theme-transition);
+}
+
+.console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 15px;
+    /* background-color: #1a1a1a; */
+    background-color: var(--current-console-header-bg) !important;
+    border-bottom: 1px solid var(--theme-color); /* 主题化边框颜色 */
+    height: 30px;
+    flex-shrink: 0;
+    transition: var(--theme-transition);
+}
+
+.console-header h3 {
+    margin: 0;
+    font-size: 16px;
+    /* color: #e0e0e0; */
+    color: var(--current-heading-text);
+    transition: var(--theme-transition);
+}
+
+.console-btn {
+    padding: 3px 10px;
+    /* background-color: #3a3a3a; */
+    background-color: rgba(0,0,0,0.2);
+    /* color: #e0e0e0; */
+    color: var(--current-heading-text);
+    border: 1px solid var(--theme-color);
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--theme-transition);
+}
+
+.console-btn:hover {
+    /* background-color: #444; */
+    background-color: var(--theme-color);
+    color: white;
+}
+
+.console-output {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 10px 15px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    height: calc(100% - 30px);
+    min-height: 100px;
+    background-color: var(--current-console-bg) !important;  /* 确保控制台输出区域也应用主题背景 */
+    transition: var(--theme-transition);
+}
+
+.console-line {
+    margin-bottom: 5px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--current-console-text);
+    transition: var(--theme-transition);
+}
+
+.console-line.error {
+    color: #ff6b6b;
+}
+
+.console-line.warning {
+    color: #feca57;
+}
+
+.console-line.success {
+    color: #1dd1a1;
+}
+
+/* 自定义滚动条样式 */
+.console-output::-webkit-scrollbar {
+    width: 8px;
+}
+
+.console-output::-webkit-scrollbar-track {
+    /* background: #1a1a1a; */
+    background: rgba(0,0,0,0.1);
+}
+
+.console-output::-webkit-scrollbar-thumb {
+    /* background: #555; */
+    background: var(--theme-color);
+    border-radius: 4px;
+}
+
+.console-output::-webkit-scrollbar-thumb:hover {
+    /* background: #777; */
+    background: var(--theme-color);
+    opacity: 0.8;
+}
+
+/* 自定义侧边栏滚动条 */
+.app-sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.app-sidebar::-webkit-scrollbar-track {
+    /* 使用当前主题的背景颜色 */
+    background: var(--current-sidebar-bg);
+}
+
+.app-sidebar::-webkit-scrollbar-thumb {
+    /* 使用当前主题的主题颜色 */
+    background: var(--theme-color);
+    border-radius: 3px;
+}
+
+.app-sidebar::-webkit-scrollbar-thumb:hover {
+    /* 在悬停时稍微加深颜色 */
+    background: var(--theme-color);
+    opacity: 0.8;
+}
+
+/* 媒体查询-适应小屏幕 */
+@media (max-width: 768px) {
+    .app-sidebar {
+        flex: 0 0 250px;
+    }
+}
+
+/* 动画效果 */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.logo-text {
+    animation: pulse 2s infinite;
+}
+
+/* 侧边栏切换按钮 */
+.sidebar-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--theme-color);
+    opacity: 0.8;
+    border: none;
+    color: #eceff1;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--theme-transition);
+    padding: 0;
+    font-size: 12px;
+}
+
+.sidebar-toggle:hover {
+    background: var(--theme-color);
+    opacity: 1;
+}
+
+/* 显示侧边栏按钮（在侧边栏隐藏时显示） */
+.show-sidebar-btn {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background: var(--theme-color);
+    opacity: 0.8;
+    border: none;
+    color: #eceff1;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: none; /* 默认隐藏 */
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--theme-transition);
+    z-index: 99;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 0;
+    font-size: 14px;
+}
+
+.show-sidebar-btn:hover {
+    background: var(--theme-color);
+    opacity: 1;
+}
+
+/* 当侧边栏隐藏时显示此按钮 */
+.app-main.full-width .show-sidebar-btn {
+    display: flex;
+}
+
+/* 添加按钮激活状态的呼吸灯效果 */
+@keyframes activeGlow {
+    0% {
+        box-shadow: 0 0 5px var(--theme-color);
+    }
+    100% {
+        box-shadow: 0 0 15px var(--theme-color);
+    }
+}
+
+/* 确保所有可能的控制台元素都应用正确的背景色 */
+#consoleOutput {
+    background-color: var(--current-console-bg) !important;
+    transition: var(--theme-transition);
+}
+
+/* 更新按钮样式以增强主题一致性 */
+.sidebar-toggle,
+.show-sidebar-btn {
+    background: var(--theme-color);
+    opacity: 0.8;
+    transition: var(--theme-transition);
+}
+
+.sidebar-toggle:hover,
+.show-sidebar-btn:hover {
+    background: var(--theme-color);
+    opacity: 1;
+}
+
+/* 自定义边框颜色以增强主题一致性 */
+.console-panel {
+    border-top: 1px solid var(--theme-color);
+}
+
+.console-header {
+    border-bottom: 1px solid var(--theme-color);
+} 
+/* 适用于信息框容器的基本样式 - 修改为标签样式 */
+.info-box-container {
+    position: fixed; /* 仍然 fixed 以便在 body 上定位 */
+    top: 0;
+    left: 0;
+    width: 0; /* 容器本身不占据空间 */
+    height: 0; /* 容器本身不占据空间 */
+    /* background-color: rgba(0, 0, 0, 0.2); Removed background */
+    z-index: 10000; 
+    pointer-events: none; /* 允许穿透点击 */
+}
+
+/* 信息框本身的样式 - 修改为标签样式 */
+.info-box {
+    position: fixed; 
+    background-color: rgba(250, 250, 250, 0.95); /*略微透明的浅色背景*/
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /*更柔和的阴影*/
+    min-width: auto; /* 自动宽度 */
+    max-width: 350px; /* 限制最大宽度 */
+    font-size: 13px; /* 统一字体大小 */
+    pointer-events: auto; /* 信息框本身可交互 */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* 添加过渡效果 */
+}
+
+.info-box h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 14px; /* 减小标题字号 */
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 5px;
+    color: var(--theme-color, #007bff);
+}
+
+.info-box ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-box ul li {
+    padding: 4px 0; /* 减小列表项间距 */
+    font-size: 13px;
+    border-bottom: 1px dotted #f0f0f0; /*虚线分隔*/
+}
+.info-box ul li:last-child {
+    border-bottom: none;
+}
+.info-box ul li strong {
+    color: var(--theme-color-dark-700, #444);
+    margin-right: 6px;
+}
+
+/* 关闭按钮的样式 - 修改为更小巧 */
+.info-box-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: normal;
+    color: #888;
+    cursor: pointer;
+    padding: 3px;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.info-box-close:hover {
+    color: #000;
+}
+
+/* 模态框样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    position: relative;
+    animation: slideIn 0.3s ease;
+}
+
+.close-modal {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    color: #888;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: var(--theme-color);
+}
+
+.modal h3 {
+    margin-top: 0;
+    color: var(--theme-color);
+    border-bottom: 2px solid var(--theme-color-light-200);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: var(--theme-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.2);
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.primary-btn {
+    background-color: var(--theme-color);
+    color: white;
+}
+
+.primary-btn:hover {
+    background-color: var(--theme-color-dark-700);
+}
+
+.secondary-btn {
+    background-color: #f1f1f1;
+    color: #555;
+}
+
+.secondary-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.result-container {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--theme-color);
+}
+
+.result-container h4 {
+    margin-top: 0;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.result-container p {
+    margin: 5px 0;
+    line-height: 1.5;
+}
+
+.result-container .error {
+    color: #d32f2f;
+}
+
+.result-container .warning {
+    color: #f57c00;
+}
+
+.result-container .success {
+    color: #388e3c;
+}
+
+.result-container .info {
+    color: #1976d2;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.path-legend {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    border-left: 4px solid var(--theme-color);
+}
+
+.path-legend p {
+    margin: 5px 0;
+    font-size: 13px;
+}
+
+.path-legend p strong {
+    font-weight: 600;
+}
+
+.collapsible-container {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden; /* 隐藏溢出内容 */
+}
+
+.collapsible-header {
+    background-color: color-mix(in srgb, var(--current-sidebar-bg), black var(--collapsible-darken-percentage));
+    color: #333;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.collapsible-header:hover {
+    background-color: #ddd;
+}
+
+.collapsible-header.active {
+    background-color: #ccc;
+}
+
+.collapsible-content {
+    padding: 0 10px;
+    background-color: color-mix(in srgb, var(--current-sidebar-bg), black var(--collapsible-darken-percentage));
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+
+.collapsible-content.show {
+    max-height: 500px; /* 足够大的值以显示内容 */
+    padding: 10px;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.collapsible-header.active .toggle-icon {
+    transform: rotate(90deg); /* 展开时旋转图标 */
+}
