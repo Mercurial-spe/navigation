@@ -1,3 +1,0 @@
-flask==3.1.0
-scipy==1.15.3
-flask-socketio==5.3.0
