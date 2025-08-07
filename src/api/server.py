@@ -1019,7 +1019,7 @@ def precompute_zoom_level_clusters_KMeans(graph):
         n_clusters = min(n_clusters, node_count)
         
 
-        max_iter = 100   # Mini-batch 通常需要较少的迭代
+        max_iter = 100   # 最大迭代次数
         tol = 1000       # 收敛容忍度
         max_no_improvement = 10 # 提前停止参数
 
@@ -1207,8 +1207,8 @@ def run_server(host='127.0.0.1', port=5000, debug=True):
         
         # 预计算不同缩放等级的聚类结果
         # 如需切换为DBSCAN预计算，请改为 precompute_zoom_level_clusters_DBSCAN(GRAPH)
-        # precompute_zoom_level_clusters_DBSCAN(GRAPH)
-        precompute_zoom_level_clusters_KMeans(GRAPH)
+        precompute_zoom_level_clusters_DBSCAN(GRAPH)
+        # precompute_zoom_level_clusters_KMeans(GRAPH)
         
     except Exception as e:
         import traceback
